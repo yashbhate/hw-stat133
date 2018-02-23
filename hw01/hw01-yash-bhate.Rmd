@@ -1,0 +1,179 @@
+---
+title: "hw01-yash-bhate"
+output: github_document 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+download.file(url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/autos/imports-85.data', destfile = 'imports-85.data')
+column_names = c('symboling', 'normalized_losses', 'make', 'fuel_type', 'aspiration', 'num_of_doors', 'body_style', 'drive_wheels', 'engine_location', 'wheel_base', 'length', 'width', 'height', 'curb_weight', 'engine_type', 'num_of_cyclinders', 'engine_size', 'fuel_system', 'bore', 'stroke', 'compression_ratio', 'horsepower', 'peak_rpm', 'city_mpg', 'highway_mpg', 'price')
+column_types = c('character', 'real', 'character', 'character', 'character', 'character', 'character', 'character', 'character', 'real', 'real', 'real', 'real', 'integer', 'character', 'character', 'integer', 'character', 'real', 'real', 'real', 'integer', 'integer', 'integer', 'integer', 'integer')
+imports <- read.csv('imports-85.data', col.names = column_names, colClasses = column_types, sep = ',', header = FALSE, na.strings = "?")
+str(imports)
+#install.packages('readr')
+library('readr')
+imports1 <- read_csv('imports-85.data', col_names = column_names,
+                     col_types = list(
+                       "symboling" = col_character(),
+                       "normalized_losses" = col_double(),
+                       "make" = col_character(),
+                       "fuel_type" = col_character(),
+                       "aspiration" = col_character(),
+                       "num_of_doors" = col_character(),
+                       "body_style" = col_character(),
+                       "drive_wheels" = col_character(),
+                       "engine_location" = col_character(),
+                       "wheel_base" = col_double(),
+                       "length" = col_double(),
+                       "width" = col_double(),
+                       "height" = col_double(),
+                      "curb_weight" = col_double(),
+                      "enginer_type" = col_character(), 
+                      'num_of_cyclinders' = col_character(),
+                      'enginer_size' = col_integer(), 
+                      'fuel_system'= col_double(),
+                      'bore' = col_double(),
+                      'stroke' = col_double(),
+                      'compression_ratio'= col_double(), 
+                      'horsepower' = col_integer(),
+                      'peak_rpm' = col_integer(),
+                      'city_mpg' = col_integer(),
+                      'highway_mpg' = col_integer(),
+                      'price' = col_integer()
+                     ), na = '?'
+                     )
+```
+
+Q3) 
+a). If you don't provide a vector of column files, or simply invoke read.csv('imports-85.data') we have no column names depicted although the rows are indexed numerically from 1 onwards. 
+
+b). If you don't provide a vector of column files, but mention header = FALSE we get the columns headings displayed with a generic header name (V) indexed from 1 to the last column number. 
+
+c). If you don't specify how missing values are codified, then the data-type will not be applied to the column. When we do specify the type to missing values, thier saved data type will be that of teh column they are in 
+
+
+d). The second data frame is bigger because it has more information contained. Information (column_names and column_types) is stored as bytes and if the two data frames ar identical otherwise, the one with more information has to have more bytes. 
+
+e) While converting to a matrix, there are some changes. The values in non-numeric columns change as matrix is a homogenous, 2D structure. Here, there are columns of varied types and when a column of type characted becomes numeric due to matrix data-type conversion. Apart from the first row of values (which serves as refernce) all others are converted to a numeric form.
+
+```{r}
+#histogram of price with colored bars
+dat <- read.csv('imports-85.data', col.names = column_names, colClasses = column_types, sep = ',',
+                    na.strings = "?")
+colors = c("red", "yellow", "green", "violet", "orange", "blue", "pink", "cyan", "green") 
+hist(dat$price, col=colors, xlab = "Price")
+```
+This plot depicts the price histogram on the x-axis and the frequency on the y-axis. The colors are first stored into a colors array and then passed as an argument into the his function to create this graph. 
+
+```{r}
+boxplot(dat$horsepower, horizontal = TRUE)
+```
+This represents a boxplot in horizontal orientation as the horizontal sets to TRUE.
+
+```{r}
+#barplot of the frequencies of body_style, arranged in decreasing order.
+tbl <- sort(table(dat$body_style), decreasing = TRUE)
+barplot(tbl)
+```
+First we create a table to give us a count of different categories of body_style in dat. Then, we sort it as we wont frequencies in descending order. Finally pass it in as an argument into barplot function. 
+
+```{r}
+#stars() plot of vehicles with turbo aspiration, using only variables wheel-base,length, width, height, and price.
+tb <- stars(dat[dat$aspiration == 'turbo', c('wheel_base', 'length', 'width', 'height', 'price')])
+tb
+```
+
+```{r}
+#Mean price of fuel_type gas cars
+mean(dat$price[dat$fuel_type == 'gas'], na.rm = TRUE)
+```
+```{r}
+#Mean price of fuel_type diesel cars
+mean(dat$price[dat$fuel_type == 'diesel'], na.rm = TRUE)
+```
+
+```{r}
+#Make of the car with twelve num_of_cylinders
+dat$make[dat$num_of_cyclinders == 12]
+```
+
+```{r}
+#What is the make that has the most diesel cars
+#dat$make[dat$fuel_type == max(dat$fuel_type)]
+#factor(dat$make, dat$fuel_type)
+```
+```{r}
+#Price of the car with the largest amount of horsepower
+dat$price[max((dat$horsepower), na.rm = TRUE)]
+#the answer refers to an empty cell
+```
+```{r}
+#What is the bottom 10th percentile of city_mpg?
+bottom_10 <- quantile(dat$city_mpg, prob = 0.1)
+bottom_10
+```
+````{r}
+#top 10th percentile of highway_mpg
+top_10 <- quantile(dat$city_mpg, prob = 0.9)
+top_10
+```
+```{r}
+#median price of those cars in the bottom 10th percentile of city_mpg
+median(dat$price[dat$city_mpg <= bottom_10], na.rm= TRUE)
+```
+
+Q6).
+a. When you try and access a column that doesnt exist, the console will give you the value NULL as it cannot index to any particular part of the frame
+
+b. All of the options will work except Choice 4 
+
+c. This is because if you are trying to aceess the column using its name it has to be as a string input, otherwise R looks for a variable with that name that doesnt exist.
+
+d. Yes you can, this because a data-frame is a n-dimensional form of a list. It is important to make sure that the number of elements in each list added to the vector frame are the same. Finally, both data frames and lists are heterogenous forms of storing data (can have numerous data-types)
+
+e. When you apply the as.list function to a data-frame it just breaks down the data frame and creates lists which has as my entries as the data frame has columns. It creates a "1-D" form of the data frame. 
+
+f. To convert abc into a data frame we use the as.data.frame function and pass in abc as an argument. 
+
+```{r}
+install.packages('corrplot')
+library(corrplot)
+qdat <- na.omit(dat[c('wheel_base', 'length', 'width', 'height', 'curb_weight', 'engine_size', 'bore', 'stroke', 'compression_ratio', 'horsepower', 'peak_rpm', 'city_mpg', 'highway_mpg', 'price')])
+corrs <- cor(qdat)
+corrplot(corrs, method='circle')
+```
+Many of the values that one would expect strong positive and/or negative correlations between indeed appear to exhibit some of those correlations. For example, weight and highway mpg have strong negative correlation, as one might expect, and city and highway mpgs are strongly correlated with each other.
+
+```{r}
+corrplot.mixed(corrs, lower = 'number', upper = 'shade', lower.col = 'black', number.cex = .7)
+```
+This visualization lays out the numbers on one side of the symmetrical matrix, while it shades in the boxes on the other side much as it did in the first correlogram we tried. It additionally avoids the main diagonal having a correlation of 1 in each by listing the column titles.
+
+```{r}
+pc_analysis = prcomp(qdat, scale. = TRUE)
+eigenvalues <- pc_analysis$sdev^2
+sum(eigenvalues[1:3])/sum(eigenvalues)
+```
+```{r}
+components <- pc_analysis$x
+plot(components[,1], components[, 2])
+```
+```{r}
+eigenvectors = pc_analysis$rotation
+plot(eigenvectors[, 1], eigenvectors[, 2])
+```
+
+This suggests that wheel_base and length bear little correlation with the items in the rest of the data, and that there is no real trend in the distributions of the eigenvalues.
+
+
+
+
